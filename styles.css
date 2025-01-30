@@ -25,3 +25,16 @@ img {
     height: auto;
     cursor: pointer;
 }
+.photo-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.photo-container img {
+    max-width: 300px;
+    height: auto;
+    object-fit: cover;
+}
+
