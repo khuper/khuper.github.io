@@ -7,9 +7,16 @@ body {
 }
 
 header, footer {
-    background-color: #f0f0f0;
     padding: 1rem;
     text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+footer p {
+    margin: 0;
 }
 
 #featured, #gallery {
@@ -76,6 +83,23 @@ img {
 
 .image-wrapper:hover .overlay {
   opacity: 1;
+}
+
+.snowflake {
+  position: fixed;
+  pointer-events: none;
+  background: white;
+  border-radius: 50%;
+  width: 6px;
+  height: 6px;
+  animation: fall 1s linear;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(20px);
+    opacity: 0;
+  }
 }
 
 
