@@ -3,706 +3,824 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Blog</title>
+    <title>Media Reviews</title>
     <style>
         :root {
-            --primary-blue: #0066ff;
+            --primary-blue: #0066FF;
             --dark-blue: #003399;
-            --light-blue: #66a3ff;
-            --black: #000;
-            --dark-gray: #222;
-            --medium-gray: #555;
-            --light-gray: #888;
-            --white: #fff;
+            --black: #000000;
+            --white: #ffffff;
+            --gray: #808080;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
         }
-
+        
         body {
             background-color: var(--black);
             color: var(--white);
             overflow-x: hidden;
         }
-
-        /* Loading Screen */
-        #loading-screen {
+        
+        .loader {
             position: fixed;
+            z-index: 9999;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background-color: var(--black);
-            z-index: 1000;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
         }
-
-        .loading-counter {
-            font-size: 6rem;
+        
+        .loader-counter {
+            font-size: 32px;
             font-weight: 700;
+            margin-bottom: 20px;
         }
-
-        .loading-total {
-            font-size: 2rem;
-            margin-top: -20px;
-            opacity: 0.5;
-        }
-
-        .loading-title {
-            margin-top: 30px;
-            font-size: 2rem;
+        
+        .loader-title {
+            font-size: 64px;
+            font-weight: 900;
+            letter-spacing: -2px;
             opacity: 0;
             transform: translateY(20px);
-            transition: opacity 0.5s, transform 0.5s;
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
-
-        /* Header */
-        header {
-            padding: 2rem;
+        
+        .loader-title.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .header {
+            padding: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             z-index: 100;
             mix-blend-mode: difference;
         }
-
+        
         .logo {
-            font-size: 1.5rem;
+            font-size: 24px;
             font-weight: 700;
-            color: var(--white);
-            text-decoration: none;
+            letter-spacing: -1px;
         }
-
+        
         .menu-toggle {
-            background: none;
-            border: none;
-            color: var(--white);
-            font-size: 1.5rem;
             cursor: pointer;
         }
-
-        /* Content */
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 120px 20px 50px;
+        
+        .main {
+            min-height: 100vh;
+            padding-top: 150px;
         }
-
-        .hero {
-            text-align: center;
-            padding: 15vh 1rem;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .hero h1 {
-            font-size: clamp(3rem, 10vw, 5rem);
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 2rem;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 1s, transform 1s;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            color: var(--light-gray);
-            max-width: 600px;
-            margin: 0 auto;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 1s 0.3s, transform 1s 0.3s;
-        }
-
-        /* Carousel */
-        .carousel {
-            margin: 100px 0;
-            perspective: 1000px;
-        }
-
+        
         .carousel-container {
             width: 100%;
-            position: relative;
-            height: 70vh;
             overflow: hidden;
         }
-
-        .carousel-track {
+        
+        .carousel {
             display: flex;
             width: fit-content;
-            height: 100%;
-            transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+            transition: transform 0.5s ease;
         }
-
+        
         .carousel-item {
+            width: 400px;
+            height: 500px;
+            margin: 0 20px;
             position: relative;
-            width: 80vw;
-            max-width: 1000px;
-            height: 100%;
-            margin-right: 20px;
             overflow: hidden;
-            border-radius: 10px;
-            transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
             cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.5s ease;
+            filter: blur(5px) grayscale(0.8);
         }
-
+        
         .carousel-item:hover {
-            transform: scale(1.02);
-        }
-
-        .carousel-item-inner {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 3rem;
-            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 70%);
-        }
-
-        .carousel-item-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            transition: filter 0.5s ease;
-            filter: blur(5px) brightness(0.6);
-        }
-
-        .carousel-item:hover .carousel-item-bg {
-            filter: blur(0) brightness(0.8);
-        }
-
-        .carousel-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            transition: transform 0.5s ease;
-            z-index: 2;
-        }
-
-        .carousel-excerpt {
-            max-width: 90%;
-            font-size: 1rem;
-            line-height: 1.5;
-            color: var(--light-gray);
-            margin-bottom: 1.5rem;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            z-index: 2;
-        }
-
-        .carousel-item:hover .carousel-excerpt {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .carousel-readmore {
-            display: inline-block;
-            color: var(--primary-blue);
-            font-weight: 500;
-            text-decoration: none;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
-            z-index: 2;
-        }
-
-        .carousel-item:hover .carousel-readmore {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .carousel-nav {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .carousel-button {
-            background: none;
-            border: 1px solid var(--light-gray);
-            color: var(--white);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin: 0 10px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        .carousel-button:hover {
-            background-color: var(--primary-blue);
-            border-color: var(--primary-blue);
-        }
-
-        .carousel-indicator {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .carousel-indicator-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--light-gray);
-            margin: 0 5px;
-            transition: all 0.3s ease;
-        }
-
-        .carousel-indicator-dot.active {
-            background-color: var(--primary-blue);
-            transform: scale(1.3);
-        }
-
-        /* Recent Posts */
-        .recent-posts {
-            margin: 150px 0;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 3rem;
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title::after {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background-color: var(--primary-blue);
-        }
-
-        .posts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .post-card {
-            position: relative;
-            height: 400px;
-            overflow: hidden;
-            border-radius: 10px;
-            transition: transform 0.3s ease;
-            cursor: pointer;
-        }
-
-        .post-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .post-card-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            transition: transform 0.5s ease;
-        }
-
-        .post-card:hover .post-card-bg {
+            filter: blur(0) grayscale(0);
             transform: scale(1.05);
         }
-
-        .post-card-content {
+        
+        .carousel-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        .carousel-content {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            padding: 2rem;
-            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 30px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            z-index: 2;
+            transition: transform 0.3s ease;
         }
-
-        .post-card-title {
-            font-size: 1.5rem;
+        
+        .carousel-item:hover .carousel-content {
+            transform: translateY(-20px);
+        }
+        
+        .carousel-title {
+            font-size: 24px;
             font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .post-card-meta {
-            font-size: 0.9rem;
-            color: var(--light-gray);
-            margin-bottom: 1rem;
-        }
-
-        .post-card-excerpt {
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: var(--light-gray);
-        }
-
-        /* Footer */
-        footer {
-            padding: 5rem 2rem;
-            background-color: var(--dark-gray);
-            text-align: center;
-        }
-
-        .footer-content {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .footer-logo {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .footer-text {
-            color: var(--light-gray);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-
-        .footer-links a {
+            margin-bottom: 10px;
             color: var(--white);
-            margin: 0 1rem;
-            text-decoration: none;
-            transition: color 0.3s ease;
         }
-
-        .footer-links a:hover {
-            color: var(--primary-blue);
-        }
-
-        .copyright {
-            color: var(--light-gray);
-            font-size: 0.8rem;
-        }
-
-        /* Scroll animations */
-        .scroll-reveal {
+        
+        .carousel-excerpt {
+            font-size: 14px;
+            line-height: 1.4;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            color: var(--white);
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 1s, transform 1s;
         }
-
-        .scroll-reveal.active {
+        
+        .carousel-item:hover .carousel-excerpt {
+            max-height: 100px;
+            opacity: 1;
+        }
+        
+        .featured-section {
+            margin-top: 120px;
+            padding: 60px 30px;
+        }
+        
+        .section-title {
+            font-size: 100px;
+            font-weight: 900;
+            letter-spacing: -4px;
+            margin-bottom: 60px;
+            opacity: 0.1;
+            transition: opacity 0.5s ease;
+        }
+        
+        .featured-section.visible .section-title {
+            opacity: 1;
+        }
+        
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .featured-section.visible .featured-grid {
             opacity: 1;
             transform: translateY(0);
         }
-
-        /* Cursor */
-        .custom-cursor {
-            position: fixed;
+        
+        .featured-item {
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .featured-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .featured-item:hover .featured-image {
+            transform: scale(1.1);
+        }
+        
+        .featured-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            z-index: 2;
+        }
+        
+        .featured-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            padding: 60px 30px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 120px;
+        }
+        
+        .footer-logo {
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: -2px;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .footer-link {
+            color: var(--white);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: var(--primary-blue);
+        }
+        
+        .cursor {
             width: 20px;
             height: 20px;
             border-radius: 50%;
             background-color: var(--primary-blue);
+            position: fixed;
             pointer-events: none;
-            mix-blend-mode: difference;
             z-index: 9999;
+            mix-blend-mode: difference;
             transform: translate(-50%, -50%);
-            opacity: 0.5;
-            transition: width 0.3s, height 0.3s, opacity 0.3s;
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
         }
-
-        .custom-cursor.active {
+        
+        a, button, .carousel-item, .featured-item {
+            cursor: none;
+        }
+        
+        a:hover ~ .cursor, button:hover ~ .cursor, .carousel-item:hover ~ .cursor, .featured-item:hover ~ .cursor {
             width: 50px;
             height: 50px;
-            opacity: 0.3;
+            background-color: var(--white);
         }
-
+        
+        .latest-reviews {
+            padding: 60px 30px;
+            margin-top: 120px;
+        }
+        
+        .reviews-container {
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+        }
+        
+        .review-item {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .latest-reviews.visible .review-item {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: calc(var(--i) * 0.1s);
+        }
+        
+        .review-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .review-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .review-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .review-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary-blue);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+        
+        .review-item:hover .review-title::after {
+            transform: scaleX(1);
+        }
+        
+        .review-excerpt {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--gray);
+        }
+        
+        .review-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: gap 0.3s ease;
+        }
+        
+        .review-link:hover {
+            gap: 15px;
+        }
+        
+        .menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--primary-blue);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            clip-path: circle(0% at calc(100% - 45px) 45px);
+            transition: clip-path 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        
+        .menu.active {
+            clip-path: circle(150% at calc(100% - 45px) 45px);
+        }
+        
+        .menu-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .menu-links {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            text-align: center;
+        }
+        
+        .menu-link {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--black);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            letter-spacing: -2px;
+        }
+        
+        .menu-link:hover {
+            color: var(--white);
+        }
+        
+        .article-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--black);
+            z-index: 1000;
+            display: none;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .article-container.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        .article-header {
+            height: 70vh;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+        }
+        
+        .article-header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+        
+        .article-header-content {
+            position: relative;
+            z-index: 2;
+            padding: 60px;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,1), transparent);
+        }
+        
+        .article-title {
+            font-size: 60px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+        
+        .article-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .article-back {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10;
+            background-color: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .article-back:hover {
+            background-color: var(--primary-blue);
+        }
+        
+        .article-content {
+            padding: 60px;
+            font-size: 18px;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .article-content p {
+            margin-bottom: 30px;
+        }
+        
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
             .carousel-item {
-                width: 100vw;
+                width: 300px;
+                height: 400px;
             }
             
-            .carousel-item-inner {
-                padding: 2rem;
+            .section-title {
+                font-size: 60px;
             }
             
-            .carousel-title {
-                font-size: 1.8rem;
+            .featured-grid {
+                grid-template-columns: 1fr;
             }
             
-            .custom-cursor {
-                display: none;
+            .review-item {
+                grid-template-columns: 1fr;
+            }
+            
+            .article-title {
+                font-size: 36px;
+            }
+            
+            .article-content {
+                padding: 30px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loading-screen">
-        <div class="loading-counter">0</div>
-        <div class="loading-total">/100</div>
-        <div class="loading-title">PHOTO BLOG</div>
+    <div class="cursor"></div>
+    
+    <div class="loader">
+        <div class="loader-counter"><span id="counter">0</span>/100</div>
+        <div class="loader-title">MEDIA REVIEWS</div>
     </div>
-
-    <!-- Custom Cursor -->
-    <div class="custom-cursor"></div>
-
-    <!-- Header -->
-    <header>
-        <a href="#" class="logo">PHOTO·BLOG</a>
-        <button class="menu-toggle">MENU</button>
+    
+    <header class="header">
+        <div class="logo">MEDIA REVIEWS</div>
+        <div class="menu-toggle">MENU</div>
     </header>
 
-    <!-- Content -->
-    <div class="container">
-        <section class="hero">
-            <h1 class="hero-title">Capturing moments through a unique lens</h1>
-            <p class="hero-description">A collection of thoughts, images, and stories that define our journey through time and space.</p>
-        </section>
-
-        <section class="carousel">
-            <div class="carousel-container">
-                <div class="carousel-track">
-                    <div class="carousel-item">
-                        <div class="carousel-item-bg" style="background-image: url('/api/placeholder/1000/800');"></div>
-                        <div class="carousel-item-inner">
-                            <h2 class="carousel-title">Urban Exploration</h2>
-                            <p class="carousel-excerpt">Wandering through the concrete jungle reveals hidden gems and forgotten spaces. The city breathes with stories waiting to be discovered...</p>
-                            <a href="#" class="carousel-readmore">Read more →</a>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="carousel-item-bg" style="background-image: url('/api/placeholder/1000/800');"></div>
-                        <div class="carousel-item-inner">
-                            <h2 class="carousel-title">Digital Landscapes</h2>
-                            <p class="carousel-excerpt">Where technology meets art, creating new realities and challenging our perception of what's possible in the digital age...</p>
-                            <a href="#" class="carousel-readmore">Read more →</a>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="carousel-item-bg" style="background-image: url('/api/placeholder/1000/800');"></div>
-                        <div class="carousel-item-inner">
-                            <h2 class="carousel-title">Abstract Visions</h2>
-                            <p class
-
-                            <h2 class="carousel-title">Abstract Visions</h2>
-                            <p class="carousel-excerpt">Form, color, and texture combine to create emotional experiences beyond the literal. These compositions speak to the subconscious...</p>
-                            <a href="#" class="carousel-readmore">Read more →</a>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="carousel-item-bg" style="background-image: url('/api/placeholder/1000/800');"></div>
-                        <div class="carousel-item-inner">
-                            <h2 class="carousel-title">Technological Revolution</h2>
-                            <p class="carousel-excerpt">Exploring the intersection of humanity and technology, where innovation shapes our future and redefines our existence...</p>
-                            <a href="#" class="carousel-readmore">Read more →</a>
-                        </div>
-                    </div>
+   <main class="main">
+    <section class="carousel-container">
+        <div class="carousel">
+            <div class="carousel-item" data-article="dune">
+                <img src="/api/placeholder/400/500" alt="Review 1" class="carousel-image">
+                <div class="carousel-content">
+                    <h3 class="carousel-title">Dune Part Two</h3>
+                    <p class="carousel-excerpt">Villeneuve's epic continuation brings Herbert's vision to stunning life, with breathtaking visuals and performances that elevate the source material...</p>
                 </div>
             </div>
-            <div class="carousel-nav">
-                <button class="carousel-button prev">←</button>
-                <button class="carousel-button next">→</button>
-            </div>
-            <div class="carousel-indicator">
-                <div class="carousel-indicator-dot active"></div>
-                <div class="carousel-indicator-dot"></div>
-                <div class="carousel-indicator-dot"></div>
-                <div class="carousel-indicator-dot"></div>
-            </div>
-        </section>
-
-        <section class="recent-posts scroll-reveal">
-            <h2 class="section-title">Recent Articles</h2>
-            <div class="posts-grid">
-                <div class="post-card">
-                    <div class="post-card-bg" style="background-image: url('/api/placeholder/600/800');"></div>
-                    <div class="post-card-content">
-                        <div class="post-card-title">The Art of Minimalism</div>
-                        <div class="post-card-meta">March 10, 2025</div>
-                        <div class="post-card-excerpt">Less is more. Exploring how reduction creates impact and brings focus to what truly matters.</div>
-                    </div>
-                </div>
-                <div class="post-card">
-                    <div class="post-card-bg" style="background-image: url('/api/placeholder/600/800');"></div>
-                    <div class="post-card-content">
-                        <div class="post-card-title">Future Interfaces</div>
-                        <div class="post-card-meta">March 8, 2025</div>
-                        <div class="post-card-excerpt">How we interact with technology is evolving rapidly. A look at what's coming next.</div>
-                    </div>
-                </div>
-                <div class="post-card">
-                    <div class="post-card-bg" style="background-image: url('/api/placeholder/600/800');"></div>
-                    <div class="post-card-content">
-                        <div class="post-card-title">Pattern Recognition</div>
-                        <div class="post-card-meta">March 5, 2025</div>
-                        <div class="post-card-excerpt">Finding order in chaos, the human mind's incredible ability to create meaning.</div>
-                    </div>
+            <div class="carousel-item" data-article="gentlemen">
+                <img src="/api/placeholder/400/500" alt="Review 2" class="carousel-image">
+                <div class="carousel-content">
+                    <h3 class="carousel-title">The Gentlemen Series</h3>
+                    <p class="carousel-excerpt">Guy Ritchie's Netflix adaptation maintains his signature style while expanding the criminal universe with fresh characters and twisty plotting...</p>
                 </div>
             </div>
-        </section>
-    </div>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-logo">PHOTO·BLOG</div>
-            <div class="footer-text">A personal space for sharing thoughts, images, and stories that matter. Thanks for visiting.</div>
-            <div class="footer-links">
-                <a href="#">About</a>
-                <a href="#">Articles</a>
-                <a href="#">Portfolio</a>
-                <a href="#">Contact</a>
+            <div class="carousel-item" data-article="insideout">
+                <img src="/api/placeholder/400/500" alt="Review 3" class="carousel-image">
+                <div class="carousel-content">
+                    <h3 class="carousel-title">Inside Out 2</h3>
+                    <p class="carousel-excerpt">Pixar's sequel introduces complex new emotions with the same heartwarming approach, creating a worthy follow-up that respects its audience...</p>
+                </div>
             </div>
-            <div class="copyright">© 2025 Photo Blog. All rights reserved.</div>
+            <div class="carousel-item" data-article="apes">
+                <img src="/api/placeholder/400/500" alt="Review 4" class="carousel-image">
+                <div class="carousel-content">
+                    <h3 class="carousel-title">Kingdom of the Planet of the Apes</h3>
+                    <p class="carousel-excerpt">A thoughtful continuation that pushes the franchise forward, blending stunning visual effects with provocative themes about civilization...</p>
+                </div>
+            </div>
+            <div class="carousel-item" data-article="bear">
+                <img src="/api/placeholder/400/500" alt="Review 5" class="carousel-image">
+                <div class="carousel-content">
+                    <h3 class="carousel-title">The Bear Season 2</h3>
+                    <p class="carousel-excerpt">Carmy's journey continues with even more intense kitchen sequences and character development, cementing the show as a masterclass in tension...</p>
+                </div>
+            </div>
         </div>
-    </footer>
+    </section>
+    
+    <section class="featured-section">
+        <h2 class="section-title">FEATURED</h2>
+        <div class="featured-grid">
+            <div class="featured-item" data-article="shogun">
+                <img src="/api/placeholder/400/400" alt="Featured 1" class="featured-image">
+                <div class="featured-content">
+                    <h3 class="featured-title">Shogun</h3>
+                </div>
+            </div>
+            <div class="featured-item" data-article="fallout">
+                <img src="/api/placeholder/400/400" alt="Featured 2" class="featured-image">
+                <div class="featured-content">
+                    <h3 class="featured-title">Fallout</h3>
+                </div>
+            </div>
+            <div class="featured-item" data-article="deadpool">
+                <img src="/api/placeholder/400/400" alt="Featured 3" class="featured-image">
+                <div class="featured-content">
+                    <h3 class="featured-title">Deadpool & Wolverine</h3>
+                </div>
+            </div>
+            <div class="featured-item" data-article="challengers">
+                <img src="/api/placeholder/400/400" alt="Featured 4" class="featured-image">
+                <div class="featured-content">
+                    <h3 class="featured-title">Challengers</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="latest-reviews">
+        <h2 class="section-title">LATEST</h2>
+        <div class="reviews-container">
+            <div class="review-item" style="--i: 0" data-article="poor-things">
+                <img src="/api/placeholder/400/300" alt="Review" class="review-image">
+                <div class="review-content">
+                    <h3 class="review-title">Poor Things</h3>
+                    <p class="review-excerpt">Yorgos Lanthimos delivers his most accessible yet wildly inventive film to date, with Emma Stone giving a transformative performance that defies all expectations. The Victorian steampunk aesthetic creates a world both familiar and utterly alien...</p>
+                    <a href="#" class="review-link">Read Review →</a>
+                </div>
+            </div>
+            <div class="review-item" style="--i: 1" data-article="quiet-place">
+                <img src="/api/placeholder/400/300" alt="Review" class="review-image">
+                <div class="review-content">
+                    <h3 class="review-title">A Quiet Place: Day One</h3>
+                    <p class="review-excerpt">This prequel expands the universe in meaningful ways, focusing on the initial invasion through the lens of a completely new character. Lupita Nyong'o anchors the film with a powerful performance that conveys volumes with minimal dialogue...</p>
+                    <a href="#" class="review-link">Read Review →</a>
+                </div>
+            </div>
+            <div class="review-item" style="--i: 2" data-article="midsummer">
+                <img src="/api/placeholder/400/300" alt="Review" class="review-image">
+                <div class="review-content">
+                    <h3 class="review-title">Midsommar Director's Cut</h3>
+                    <p class="review-excerpt">With an additional 30 minutes of footage, Aster's extended vision further develops the relationship dynamics and ritual aspects that make this folk horror so distinctive. The new scenes add crucial context that deepens the film's themes...</p>
+                    <a href="#" class="review-link">Read Review →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
 
-    <script>
-        // Loading Animation
-        document.addEventListener('DOMContentLoaded', () => {
-            const loadingCounter = document.querySelector('.loading-counter');
-            const loadingTitle = document.querySelector('.loading-title');
-            const loadingScreen = document.getElementById('loading-screen');
-            const heroTitle = document.querySelector('.hero-title');
-            const heroDescription = document.querySelector('.hero-description');
+<footer class="footer">
+    <div class="footer-logo">MR</div>
+    <div class="footer-links">
+        <a href="#" class="footer-link">About</a>
+        <a href="#" class="footer-link">Reviews</a>
+        <a href="#" class="footer-link">Contact</a>
+    </div>
+</footer>
+
+<div class="menu">
+    <div class="menu-close">CLOSE</div>
+    <div class="menu-links">
+        <a href="#" class="menu-link">HOME</a>
+        <a href="#" class="menu-link">MOVIES</a>
+        <a href="#" class="menu-link">TV SHOWS</a>
+        <a href="#" class="menu-link">GAMES</a>
+        <a href="#" class="menu-link">ABOUT</a>
+    </div>
+</div>
+
+<!-- Article templates -->
+<div class="article-container" id="article-dune">
+    <a href="#" class="article-back">← Back to Home</a>
+    <div class="article-header">
+        <img src="/api/placeholder/1200/700" alt="Dune Part Two" class="article-header-bg">
+        <div class="article-header-content">
+            <h1 class="article-title">Dune Part Two: A Visual and Emotional Epic That Surpasses Its Predecessor</h1>
+            <div class="article-meta">
+                <span>March 8, 2025</span>
+                <span>Movies</span>
+                <span>Rating: 9.5/10</span>
+            </div>
+        </div>
+    </div>
+    <div class="article-content">
+        <p>Denis Villeneuve's follow-up to his 2021 adaptation of Frank Herbert's seminal science fiction novel is that rarest of sequels—one that not only matches but exceeds the original in nearly every aspect. "Dune: Part Two" picks up immediately after the events of the first film, with Paul Atreides (Timothée Chalamet) and his mother Lady Jessica (Rebecca Ferguson) now living among the Fremen, the indigenous people of the desert planet Arrakis.</p>
+        
+        <p>What follows is a messianic journey that interrogates the dangers of religious fervor and the corrupting influence of power. Chalamet, who was somewhat reserved in the first installment, fully embraces Paul's transformation from reluctant heir to a man torn between his humanity and the violent destiny he increasingly comes to accept. His physical presence has evolved as well—leaner, harder, and more confident in his movements across the sand.</p>
+        
+        <p>New additions to the cast enhance the already stellar ensemble. Austin Butler is unrecognizable as the sadistic Feyd-Rautha Harkonnen, creating a chilling counterpoint to Paul's journey. Florence Pugh brings depth to Princess Irulan, a character with limited screen time but whose perspective offers crucial insights into the political machinations of the Imperium.</p>
+        
+        <p>Villeneuve's visual storytelling reaches new heights here. The sandworm riding sequences are breathtaking achievements in visual effects, sound design, and editing. The battles are visceral and disorienting in the best possible way, emphasizing the brutality and chaos of combat rather than glorifying it. Hans Zimmer's score remains a character unto itself, with new Fremen-inspired themes that convey both the harsh beauty of Arrakis and the spiritual dimensions of Paul's journey.</p>
+        
+        <p>At 166 minutes, the film is substantial but never drags, each scene propelling the narrative forward while allowing moments for character development and world-building. The climactic confrontation delivers on multiple levels—emotionally, thematically, and as pure spectacle.</p>
+        
+        <p>"Dune: Part Two" is not just a great science fiction film but a great film, period—one that uses its genre trappings to explore timeless questions about power, faith, revenge, and the burden of fulfilling (or defying) one's destiny.</p>
+    </div>
+</div>
+
+<script>
+    // Loader animation
+    let counter = 0;
+    const counterEl = document.getElementById('counter');
+    const loaderEl = document.querySelector('.loader');
+    const loaderTitle = document.querySelector('.loader-title');
+    
+    const interval = setInterval(() => {
+        counter += Math.floor(Math.random() * 5) + 1;
+        if (counter > 100) counter = 100;
+        counterEl.textContent = counter;
+        
+        if (counter >= 100) {
+            clearInterval(interval);
+            loaderTitle.classList.add('visible');
             
-            let count = 0;
-            const interval = setInterval(() => {
-                count += Math.floor(Math.random() * 5) + 1;
-                if (count >= 100) {
-                    count = 100;
-                    clearInterval(interval);
-                    
-                    // Show loading title with delay
-                    setTimeout(() => {
-                        loadingTitle.style.opacity = '1';
-                        loadingTitle.style.transform = 'translateY(0)';
-                        
-                        // Hide loading screen after delay
-                        setTimeout(() => {
-                            loadingScreen.style.opacity = '0';
-                            loadingScreen.style.pointerEvents = 'none';
-                            setTimeout(() => {
-                                loadingScreen.style.display = 'none';
-                                
-                                // Animate hero elements
-                                heroTitle.style.opacity = '1';
-                                heroTitle.style.transform = 'translateY(0)';
-                                
-                                setTimeout(() => {
-                                    heroDescription.style.opacity = '1';
-                                    heroDescription.style.transform = 'translateY(0)';
-                                }, 300);
-                            }, 500);
-                        }, 1000);
-                    }, 300);
-                }
-                loadingCounter.textContent = count;
-            }, 50);
+            setTimeout(() => {
+                loaderEl.style.opacity = 0;
+                setTimeout(() => {
+                    loaderEl.style.display = 'none';
+                }, 500);
+            }, 1000);
+        }
+    }, 50);
+    
+    // Carousel logic
+    const carousel = document.querySelector('.carousel');
+    let isDragging = false;
+    let startPosition = 0;
+    let currentTranslate = 0;
+    let prevTranslate = 0;
+    
+    carousel.addEventListener('mousedown', dragStart);
+    carousel.addEventListener('touchstart', dragStart);
+    carousel.addEventListener('mouseup', dragEnd);
+    carousel.addEventListener('touchend', dragEnd);
+    carousel.addEventListener('mousemove', drag);
+    carousel.addEventListener('touchmove', drag);
+    carousel.addEventListener('mouseleave', dragEnd);
+    
+    function dragStart(event) {
+        startPosition = getPositionX(event);
+        isDragging = true;
+        carousel.style.cursor = 'grabbing';
+    }
+    
+    function drag(event) {
+        if (isDragging) {
+            const currentPosition = getPositionX(event);
+            currentTranslate = prevTranslate + currentPosition - startPosition;
+            carousel.style.transform = `translateX(${currentTranslate}px)`;
+        }
+    }
+    
+    function dragEnd() {
+        isDragging = false;
+        prevTranslate = currentTranslate;
+        carousel.style.cursor = 'grab';
+    }
+    
+    function getPositionX(event) {
+        return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+    }
+    
+    // Scroll animations
+    const sections = document.querySelectorAll('.featured-section, .latest-reviews');
+    
+    const checkScroll = () => {
+        sections.forEach(section => {
+            const sectionTop = section.getBoundingClientRect().top;
+            const sectionBottom = section.getBoundingClientRect().bottom;
             
-            // Scroll animations
-            const scrollReveal = () => {
-                const elements = document.querySelectorAll('.scroll-reveal');
-                elements.forEach(el => {
-                    const elementTop = el.getBoundingClientRect().top;
-                    const elementVisible = 150;
-                    if (elementTop < window.innerHeight - elementVisible) {
-                        el.classList.add('active');
-                    }
-                });
-            };
-            
-            window.addEventListener('scroll', scrollReveal);
-            scrollReveal();
-            
-            // Carousel
-            const track = document.querySelector('.carousel-track');
-            const items = document.querySelectorAll('.carousel-item');
-            const prevButton = document.querySelector('.carousel-button.prev');
-            const nextButton = document.querySelector('.carousel-button.next');
-            const dots = document.querySelectorAll('.carousel-indicator-dot');
-            
-            let currentIndex = 0;
-            const itemWidth = items[0].getBoundingClientRect().width;
-            
-            const moveToIndex = (index) => {
-                currentIndex = index;
-                if (currentIndex < 0) currentIndex = items.length - 1;
-                if (currentIndex >= items.length) currentIndex = 0;
-                
-                track.style.transform = `translateX(${-currentIndex * itemWidth}px)`;
-                
-                // Update indicators
-                dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', i === currentIndex);
-                });
-            };
-            
-            prevButton.addEventListener('click', () => moveToIndex(currentIndex - 1));
-            nextButton.addEventListener('click', () => moveToIndex(currentIndex + 1));
-            
-            dots.forEach((dot, i) => {
-                dot.addEventListener('click', () => moveToIndex(i));
-            });
-            
-            // Custom cursor
-            const cursor = document.querySelector('.custom-cursor');
-            
-            document.addEventListener('mousemove', (e) => {
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
-            });
-            
-            document.addEventListener('mousedown', () => {
-                cursor.classList.add('active');
-            });
-            
-            document.addEventListener('mouseup', () => {
-                cursor.classList.remove('active');
-            });
-            
-            const interactiveElements = document.querySelectorAll('a, button, .carousel-item, .post-card');
-            interactiveElements.forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    cursor.classList.add('active');
-                });
-                
-                el.addEventListener('mouseleave', () => {
-                    cursor.classList.remove('active');
-                });
-            });
+            if (sectionTop < window.innerHeight * 0.8 && sectionBottom > 0) {
+                section.classList.add('visible');
+            }
         });
-    </script>
-</body>
-</html>
+    };
+    
+    window.addEventListener('scroll', checkScroll);
+    window.addEventListener('load', checkScroll);
+    
+    // Custom cursor
+    const cursor = document.querySelector('.cursor');
+    
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+    
+    // Menu toggle
+    const menuToggle = document.querySelector('.menu-toggle');
+    const menuClose = document.querySelector('.menu-close');
+    const menu = document.querySelector('.menu');
+    
+    menuToggle.addEventListener('click', () => {
+        menu.classList.add('active');
+    });
+    
+    menuClose.addEventListener('click', () => {
+        menu.classList.remove('active');
+    });
+    
+    // Article view
+    const articleItems = document.querySelectorAll('[data-article]');
+    const articles = document.querySelectorAll('.article-container');
+    const articleBacks = document.querySelectorAll('.article-back');
+    
+    articleItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const articleId = item.getAttribute('data-article');
+            const targetArticle = document.getElementById(`article-${articleId}`);
+            
+            if (targetArticle) {
+                targetArticle.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    });
+    
+    articleBacks.forEach(back => {
+        back.addEventListener('click', (e) => {
+            e.preventDefault();
+            articles.forEach(article => {
+                article.classList.remove('active');
+            });
+            document.body.style.overflow = 'auto';
+        });
+    });
+</script>
