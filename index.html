@@ -1,254 +1,842 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chicken Coop - Media Reviews</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chicken Coop - Media Reviews</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600;800&display=swap');
+
+    :root {
+      --primary-blue: #0066ff;
+      --dark-blue: #003399;
+      --light-blue: #99c2ff;
+      --black: #000000;
+      --dark-gray: #222222;
+      --light-gray: #f5f5f5;
+      --white: #ffffff;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+    }
+
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--black);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--white);
+    }
+
+    .loading-bar {
+      width: 300px;
+      height: 2px;
+      background-color: var(--dark-gray);
+      margin: 20px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading-progress {
+      height: 100%;
+      background-color: var(--primary-blue);
+      width: 0;
+      transition: width 0.5s ease;
+    }
+
+    .loading-percentage {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      z-index: 100;
+      background-color: var(--black);
+      transition: var(--transition);
+    }
+
+    nav.scrolled {
+      padding: 10px 40px;
+      background-color: rgba(0, 0, 0, 0.95);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .logo {
+      max-height: 40px;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+    }
+
+    .nav-links li {
+      margin-left: 30px;
+    }
+
+    .nav-links a {
+      color: var(--white);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary-blue);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -5px;
+      left: 0;
+      background-color: var(--primary-blue);
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding-top: 80px;
+    }
+
+    .hero-content {
+      z-index: 2;
+      max-width: 800px;
+      padding: 0 20px;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      line-height: 1.6;
+      color: var(--light-gray);
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: var(--primary-blue);
+      color: var(--white);
+      padding: 12px 30px;
+      border: none;
+      border-radius: 2px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: var(--dark-blue);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
+    }
+
+    .featured-reviews {
+      padding: 100px 40px;
+      position: relative;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      width: 60px;
+      height: 3px;
+      background-color: var(--primary-blue);
+      bottom: -10px;
+      left: 0;
+    }
+
+    .section-description {
+      max-width: 600px;
+      margin-bottom: 50px;
+      color: var(--light-gray);
+    }
+
+    .carousel-container {
+      width: 100%;
+      position: relative;
+      margin: 30px 0;
+      overflow: hidden;
+    }
+
+    .carousel {
+      display: flex;
+      transition: transform 0.5s ease;
+    }
+
+    .carousel-item {
+      flex: 0 0 330px;
+      min-width: 330px;
+      height: 450px;
+      margin-right: 20px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      filter: blur(3px) grayscale(50%);
+      transform: scale(0.9);
+    }
+
+    .carousel-item:hover {
+      filter: blur(0) grayscale(0);
+      transform: scale(1);
+      z-index: 10;
+    }
+
+    .carousel-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+
+    .carousel-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .carousel-item-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0));
+      transform: translateY(70%);
+      transition: var(--transition);
+    }
+
+    .carousel-item:hover .carousel-item-content {
+      transform: translateY(0);
+    }
+
+    .carousel-item h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .carousel-item p {
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .carousel-item:hover p {
+      opacity: 1;
+    }
+
+    .category-tag {
+      display: inline-block;
+      background-color: var(--primary-blue);
+      color: var(--white);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-bottom: 10px;
+    }
+
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .carousel-control {
+      background-color: var(--dark-gray);
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 10px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .carousel-control:hover {
+      background-color: var(--primary-blue);
+    }
+
+    .carousel-control svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--white);
+    }
+
+    .polls-section {
+      padding: 100px 40px;
+      background-color: var(--dark-gray);
+      position: relative;
+    }
+
+    .poll-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 30px;
+      border-radius: 8px;
+    }
+
+    .poll-question {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .poll-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .poll-option {
+      position: relative;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition);
+      overflow: hidden;
+    }
+
+    .poll-option:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .poll-option.selected {
+      background-color: rgba(0, 102, 255, 0.3);
+    }
+
+    .poll-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: var(--primary-blue);
+      opacity: 0.2;
+      transition: width 0.5s ease;
+      z-index: 1;
+    }
+
+    .poll-option-text {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .poll-votes {
+      font-weight: 600;
+    }
+
+    .poll-submit {
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    footer {
+      padding: 50px 40px;
+      background-color: var(--black);
+      text-align: center;
+    }
+
+    .footer-logo {
+      max-height: 40px;
+      margin-bottom: 20px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    .footer-links li {
+      margin: 0 15px;
+    }
+
+    .footer-links a {
+      color: var(--light-gray);
+      text-decoration: none;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--primary-blue);
+    }
+
+    .copyright {
+      font-size: 14px;
+      color: var(--light-gray);
+      margin-top: 20px;
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .social-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--dark-gray);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: var(--transition);
+    }
+
+    .social-icon:hover {
+      background-color: var(--primary-blue);
+      transform: translateY(-3px);
+    }
+
+    .social-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--white);
+    }
+
+    .parallax-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://source.unsplash.com/random/1920x1080/?cinema');
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1;
+    }
+
+    .shape {
+      position: absolute;
+      background-color: var(--primary-blue);
+      opacity: 0.1;
+      z-index: 0;
+    }
+
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      top: -150px;
+      right: -150px;
+    }
+
+    .shape-2 {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      bottom: -100px;
+      left: -100px;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .carousel-item {
+        flex: 0 0 280px;
+        min-width: 280px;
+        height: 400px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <img src="https://files.catbox.moe/ilv2ni.png" alt="Chicken Coop Logo">
-            </div>
-            <ul class="nav-links">
-                <li><a href="#" class="active">Home</a></li>
-                <li><a href="#">Films</a></li>
-                <li><a href="#">TV</a></li>
-                <li><a href="#">Books</a></li>
-                <li><a href="#">Polls</a></li>
-            </ul>
-            <div class="burger">
-                <div class="line1"></div>
-                <div class="line2"></div>
-                <div class="line3"></div>
-            </div>
+  <!-- Loading Screen -->
+  <div class="loading-screen">
+    <img src="https://files.catbox.moe/ilv2ni.png" alt="Chicken Coop Logo" class="logo">
+    <div class="loading-percentage">0/100</div>
+    <div class="loading-bar">
+      <div class="loading-progress"></div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav>
+    <img src="https://files.catbox.moe/ilv2ni.png" alt="Chicken Coop" class="logo">
+    <ul class="nav-links">
+      <li><a href="#featured">Featured</a></li>
+      <li><a href="#films">Films</a></li>
+      <li><a href="#tv">TV Shows</a></li>
+      <li><a href="#books">Books</a></li>
+      <li><a href="#polls">Polls</a></li>
+    </ul>
+  </nav>
+
+ <!-- Hero Section -->
+  <section class="hero">
+    <div class="parallax-bg" data-speed="0.5"></div>
+    <div class="overlay"></div>
+    <div class="hero-content">
+      <h1>Chicken Coop</h1>
+      <p>Thoughtful reviews of films, TV shows, and books that matter. Explore our curated selection of media critiques and join the conversation.</p>
+      <a href="#featured" class="btn">Explore Reviews</a>
+    </div>
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+  </section>
+
+  <!-- Featured Reviews Section -->
+  <section class="featured-reviews" id="featured">
+    <h2 class="section-title">Featured Reviews</h2>
+    <p class="section-description">Our most recent and noteworthy critiques from across all media types.</p>
+    
+    <div class="carousel-container">
+      <div class="carousel">
+        <div class="carousel-item">
+          <span class="category-tag">Film</span>
+          <img src="/api/placeholder/400/600" alt="Dune: Part Two">
+          <div class="carousel-item-content">
+            <h3>Dune: Part Two</h3>
+            <p>Denis Villeneuve's epic continuation delivers on its promises with breathtaking visuals and emotional depth that elevates it beyond the typical sci-fi blockbuster.</p>
+            <a href="#" class="btn">Read Review</a>
+          </div>
         </div>
-    </nav>
-
-    <!-- Hero Section with Parallax and Animated Scroll -->
-    <section class="hero-section">
-        <div class="parallax-bg"></div>
-        <div class="hero-content">
-            <div class="animated-container">
-                <div class="animated-element" data-speed="0.2">
-                    <h1>Latest Review</h1>
-                </div>
-                <div class="animated-element" data-speed="0.4">
-                    <h2>Dune: Part Two</h2>
-                </div>
-                <div class="animated-element" data-speed="0.6">
-                    <div class="rating">
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star half-filled">★</span>
-                        <span class="rating-text">4.5/5</span>
-                    </div>
-                </div>
-                <div class="animated-element" data-speed="0.8">
-                    <p class="review-excerpt">"Villeneuve's sequel expands the universe with breathtaking visuals and emotional depth, delivering on the promise of Frank Herbert's epic saga."</p>
-                </div>
-                <div class="animated-element" data-speed="1">
-                    <a href="#" class="cta-button">Read Full Review</a>
-                </div>
-            </div>
+        
+        <div class="carousel-item">
+          <span class="category-tag">TV</span>
+          <img src="/api/placeholder/400/600" alt="True Detective: Night Country">
+          <div class="carousel-item-content">
+            <h3>True Detective: Night Country</h3>
+            <p>Jodie Foster leads this chilling new chapter in the anthology series, blending supernatural elements with hard-boiled detective work in Alaska's endless night.</p>
+            <a href="#" class="btn">Read Review</a>
+          </div>
         </div>
-        <div class="scroll-indicator">
-            <span>Scroll Down</span>
-            <div class="arrow-down"></div>
+        
+        <div class="carousel-item">
+          <span class="category-tag">Book</span>
+          <img src="/api/placeholder/400/600" alt="Tomorrow, and Tomorrow, and Tomorrow">
+          <div class="carousel-item-content">
+            <h3>Tomorrow, and Tomorrow, and Tomorrow</h3>
+            <p>Gabrielle Zevin's novel about friendship, love, and video game design spans decades with characters that feel wholly realized and emotionally authentic.</p>
+            <a href="#" class="btn">Read Review</a>
+          </div>
         </div>
-    </section>
-
-    <!-- Featured Reviews Section -->
-    <section class="featured-reviews">
-        <h2 class="section-title">Featured Reviews</h2>
-        <div class="reviews-grid">
-            <div class="review-card" data-category="film">
-                <div class="card-image">
-                    <img src="https://via.placeholder.com/300x450" alt="Movie Poster">
-                    <div class="category-tag">Film</div>
-                </div>
-                <div class="card-content">
-                    <h3>The Batman</h3>
-                    <div class="rating">
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star">★</span>
-                        <span class="rating-text">4.0/5</span>
-                    </div>
-                    <p>A noir-detective story that reimagines the Dark Knight with gritty realism and psychological depth.</p>
-                    <a href="#" class="read-more">Read More</a>
-                </div>
-            </div>
-
-            <div class="review-card" data-category="tv">
-                <div class="card-image">
-                    <img src="https://via.placeholder.com/300x450" alt="TV Show Poster">
-                    <div class="category-tag">TV</div>
-                </div>
-                <div class="card-content">
-                    <h3>Severance</h3>
-                    <div class="rating">
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="rating-text">5.0/5</span>
-                    </div>
-                    <p>A masterful blend of sci-fi and workplace drama that questions the nature of identity and corporate control.</p>
-                    <a href="#" class="read-more">Read More</a>
-                </div>
-            </div>
-
-            <div class="review-card" data-category="book">
-                <div class="card-image">
-                    <img src="https://via.placeholder.com/300x450" alt="Book Cover">
-                    <div class="category-tag">Book</div>
-                </div>
-                <div class="card-content">
-                    <h3>Tomorrow, and Tomorrow, and Tomorrow</h3>
-                    <div class="rating">
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star half-filled">★</span>
-                        <span class="rating-text">4.5/5</span>
-                    </div>
-                    <p>Gabrielle Zevin's novel about friendship, creativity, and video game development spans decades with emotional resonance.</p>
-                    <a href="#" class="read-more">Read More</a>
-                </div>
-            </div>
-
-            <div class="review-card" data-category="film">
-                <div class="card-image">
-                    <img src="https://via.placeholder.com/300x450" alt="Movie Poster">
-                    <div class="category-tag">Film</div>
-                </div>
-                <div class="card-content">
-                    <h3>Everything Everywhere All at Once</h3>
-                    <div class="rating">
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="rating-text">5.0/5</span>
-                    </div>
-                    <p>A mind-bending multiverse adventure that balances cosmic scale with intimate family drama.</p>
-                    <a href="#" class="read-more">Read More</a>
-                </div>
-            </div>
+        
+        <div class="carousel-item">
+          <span class="category-tag">Film</span>
+          <img src="/api/placeholder/400/600" alt="Poor Things">
+          <div class="carousel-item-content">
+            <h3>Poor Things</h3>
+            <p>Yorgos Lanthimos crafts a bizarre and beautiful Victorian sci-fi tale with Emma Stone delivering a transformative performance in this adaptation of Alasdair Gray's novel.</p>
+            <a href="#" class="btn">Read Review</a>
+          </div>
         </div>
-    </section>
-
-    <!-- Interactive Polls Section -->
-    <section class="polls-section">
-        <h2 class="section-title">This Week's Poll</h2>
-        <div class="poll-container">
-            <h3 class="poll-question">What's your favorite sci-fi film of the past year?</h3>
-            <div class="poll-options">
-                <div class="poll-option" data-option-id="1">
-                    <span class="option-text">Dune: Part Two</span>
-                    <div class="option-bar">
-                        <div class="option-progress" style="width: 0%"></div>
-                        <span class="option-percentage">0%</span>
-                    </div>
-                </div>
-                <div class="poll-option" data-option-id="2">
-                    <span class="option-text">The Creator</span>
-                    <div class="option-bar">
-                        <div class="option-progress" style="width: 0%"></div>
-                        <span class="option-percentage">0%</span>
-                    </div>
-                </div>
-                <div class="poll-option" data-option-id="3">
-                    <span class="option-text">Poor Things</span>
-                    <div class="option-bar">
-                        <div class="option-progress" style="width: 0%"></div>
-                        <span class="option-percentage">0%</span>
-                    </div>
-                </div>
-                <div class="poll-option" data-option-id="4">
-                    <span class="option-text">Civil War</span>
-                    <div class="option-bar">
-                        <div class="option-progress" style="width: 0%"></div>
-                        <span class="option-percentage">0%</span>
-                    </div>
-                </div>
-            </div>
-            <div class="poll-results-container">
-                <p class="total-votes">Total votes: <span id="vote-count">0</span></p>
-                <a href="#" class="view-past-polls">View Past Polls</a>
-            </div>
+        
+        <div class="carousel-item">
+          <span class="category-tag">TV</span>
+          <img src="/api/placeholder/400/600" alt="The Bear: Season 2">
+          <div class="carousel-item-content">
+            <h3>The Bear: Season 2</h3>
+            <p>The pressure-cooker drama about a fine dining chef running a sandwich shop expands its world and characters while maintaining its unique intensity and heart.</p>
+            <a href="#" class="btn">Read Review</a>
+          </div>
         </div>
-    </section>
-
-    <!-- Newsletter Section -->
-    <section class="newsletter-section">
-        <div class="newsletter-container">
-            <h2>Stay Updated</h2>
-            <p>Subscribe to get the latest reviews and polls delivered to your inbox.</p>
-            <form class="newsletter-form">
-                <input type="email" placeholder="Your email address" required>
-                <button type="submit">Subscribe</button>
-            </form>
+      </div>
+      
+      <div class="carousel-controls">
+        <button class="carousel-control prev">
+          <svg viewBox="0 0 24 24">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+          </svg>
+        </button>
+        <button class="carousel-control next">
+          <svg viewBox="0 0 24 24">
+            <path d="M10.59 7.41L12 6l6 6-6 6-1.41-1.41L15.17 12z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Polls Section -->
+  <section class="polls-section" id="polls">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    
+    <h2 class="section-title">Reader Polls</h2>
+    <p class="section-description">Share your opinion and see what other readers think about these hot topics.</p>
+    
+    <div class="poll-container">
+      <h3 class="poll-question">What's your most anticipated film of the year?</h3>
+      <div class="poll-options">
+        <div class="poll-option">
+          <div class="poll-progress" style="width: 45%"></div>
+          <div class="poll-option-text">
+            <span>Dune: Part Two</span>
+            <span class="poll-votes">45%</span>
+          </div>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-logo">
-                <img src="https://files.catbox.moe/ilv2ni.png" alt="Chicken Coop Logo">
-            </div>
-            <div class="footer-links">
-                <div class="footer-column">
-                    <h4>Categories</h4>
-                    <ul>
-                        <li><a href="#">Films</a></li>
-                        <li><a href="#">TV Shows</a></li>
-                        <li><a href="#">Books</a></li>
-                        <li><a href="#">Polls</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h4>About</h4>
-                    <ul>
-                        <li><a href="#">About Cooper</a></li>
-                        <li><a href="#">Rating System</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h4>Follow</h4>
-                    <div class="social-icons">
-                        <a href="#" class="social-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                        </a>
-                        <a href="#" class="social-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
-                        </a>
-                        <a href="#" class="social-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div class="poll-option">
+          <div class="poll-progress" style="width: 25%"></div>
+          <div class="poll-option-text">
+            <span>Furiosa: A Mad Max Saga</span>
+            <span class="poll-votes">25%</span>
+          </div>
         </div>
-        <div class="copyright">
-            <p>&copy; 2025 Chicken Coop. All rights reserved.</p>
+        <div class="poll-option">
+          <div class="poll-progress" style="width: 20%"></div>
+          <div class="poll-option-text">
+            <span>Gladiator II</span>
+            <span class="poll-votes">20%</span>
+          </div>
         </div>
-    </footer>
+        <div class="poll-option">
+          <div class="poll-progress" style="width: 10%"></div>
+          <div class="poll-option-text">
+            <span>Kingdom of the Planet of the Apes</span>
+            <span class="poll-votes">10%</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn poll-submit">Vote</button>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer>
+    <img src="https://files.catbox.moe/ilv2ni.png" alt="Chicken Coop" class="footer-logo">
+    <div class="social-icons">
+      <a href="#" class="social-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96C18.34 21.21 22 17.06 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/>
+        </svg>
+      </a>
+      <a href="#" class="social-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.73,5.92 11.73,8.29C11.73,8.63 11.77,8.96 11.84,9.27C8.28,9.09 5.11,7.38 3,4.79C2.63,5.42 2.42,6.16 2.42,6.94C2.42,8.43 3.17,9.75 4.33,10.5C3.62,10.5 2.96,10.3 2.38,10C2.38,10 2.38,10 2.38,10.03C2.38,12.11 3.86,13.85 5.82,14.24C5.46,14.34 5.08,14.39 4.69,14.39C4.42,14.39 4.15,14.36 3.89,14.31C4.43,16 6,17.26 7.89,17.29C6.43,18.45 4.58,19.13 2.56,19.13C2.22,19.13 1.88,19.11 1.54,19.07C3.44,20.29 5.7,21 8.12,21C16,21 20.33,14.46 20.33,8.79C20.33,8.6 20.33,8.42 20.32,8.23C21.16,7.63 21.88,6.87 22.46,6Z"/>
+        </svg>
+      </a>
+      <a href="#" class="social-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,7A3,3 0 0,1 15,10A3,3 0 0,1 12,13A3,3 0 0,1 9,10A3,3 0 0,1 12,7M12,18C9.5,18 7.3,16.7 6,14.7C6,12.9 10,11.8 12,11.8C14,11.8 18,12.9 18,14.7C16.7,16.7 14.5,18 12,18Z"/>
+        </svg>
+      </a>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Terms of Service</a></li>
+    </ul>
+    <p class="copyright">© 2025 Chicken Coop. All rights reserved.</p>
+  </footer>
 
-    <script src="script.js"></script>
+  <!-- JavaScript -->
+  <script>
+    // Loading Animation
+    document.addEventListener('DOMContentLoaded', () => {
+      const loadingScreen = document.querySelector('.loading-screen');
+      const loadingProgress = document.querySelector('.loading-progress');
+      const loadingPercentage = document.querySelector('.loading-percentage');
+      let progress = 0;
+      
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 10) + 1;
+        if (progress > 100) progress = 100;
+        
+        loadingProgress.style.width = `${progress}%`;
+        loadingPercentage.textContent = `${progress}/100`;
+        
+        if (progress === 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            loadingScreen.style.opacity = 0;
+            setTimeout(() => {
+              loadingScreen.style.display = 'none';
+            }, 500);
+          }, 500);
+        }
+      }, 100);
+    });
+    
+    // Navbar Scroll Effect
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('nav');
+      if (window.scrollY > 100) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+    
+    // Parallax Effect
+    window.addEventListener('scroll', () => {
+      const parallaxElements = document.querySelectorAll('.parallax-bg');
+      parallaxElements.forEach(element => {
+        const speed = element.getAttribute('data-speed');
+        element.style.transform = `translateY(${window.scrollY * speed}px)`;
+      });
+    });
+    
+    // Carousel Functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const carousel = document.querySelector('.carousel');
+      const prevBtn = document.querySelector('.carousel-control.prev');
+      const nextBtn = document.querySelector('.carousel-control.next');
+      const itemWidth = document.querySelector('.carousel-item').offsetWidth + 20; // Width + margin
+      let position = 0;
+      
+      prevBtn.addEventListener('click', () => {
+        if (position < 0) {
+          position += itemWidth;
+          carousel.style.transform = `translateX(${position}px)`;
+        }
+      });
+      
+      nextBtn.addEventListener('click', () => {
+        const maxPosition = -(carousel.scrollWidth - carousel.parentElement.offsetWidth + 40);
+        if (position > maxPosition) {
+          position -= itemWidth;
+          carousel.style.transform = `translateX(${position}px)`;
+        }
+      });
+    });
+    
+    // Poll Interaction
+    document.addEventListener('DOMContentLoaded', () => {
+      const pollOptions = document.querySelectorAll('.poll-option');
+      const pollSubmit = document.querySelector('.poll-submit');
+      let selectedOption = null;
+      
+      pollOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          pollOptions.forEach(opt => opt.classList.remove('selected'));
+          option.classList.add('selected');
+          selectedOption = option;
+          pollSubmit.disabled = false;
+        });
+      });
+      
+      pollSubmit.addEventListener('click', () => {
+        if (selectedOption) {
+          alert('Thank you for voting!');
+          pollSubmit.textContent = 'Voted';
+          pollSubmit.disabled = true;
+        }
+      });
+    });
+    
+    // Reveal Animation on Scroll
+    document.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('section');
+      
+      const revealSection = () => {
+        sections.forEach(section => {
+          const sectionTop = section.getBoundingClientRect().top;
+          const windowHeight = window.innerHeight;
+          
+          if (sectionTop < windowHeight * 0.8) {
+            section.style.opacity = 1;
+            section.style.transform = 'translateY(0)';
+          }
+        });
+      };
+      
+      // Initialize sections with hidden state
+      sections.forEach(section => {
+        if (section !== document.querySelector('.hero')) {
+          section.style.opacity = 0;
+          section.style.transform = 'translateY(50px)';
+          section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        }
+      });
+      
+      window.addEventListener('scroll', revealSection);
+      revealSection(); // Check on initial load
+    });
+  </script>
 </body>
 </html>
