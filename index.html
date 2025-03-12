@@ -743,32 +743,31 @@
 
 <script>
     // Loader animation
-let counter = 0;
-const counterEl = document.getElementById('counter');
-const loaderEl = document.querySelector('.loader');
-const loaderTitle = document.querySelector('.loader-title');
-
-const interval = setInterval(() => {
-    counter += Math.floor(Math.random() * 5) + 1;
-    if (counter > 100) counter = 100;
-    counterEl.textContent = counter;
+    let counter = 0;
+    const counterEl = document.getElementById('counter');
+    const loaderEl = document.querySelector('.loader');
+    const loaderTitle = document.querySelector('.loader-title');
     
-    if (counter >= 100) {
-        clearInterval(interval);
-        loaderTitle.classList.add('visible');
+    const interval = setInterval(() => {
+        counter += Math.floor(Math.random() * 5) + 1;
+        if (counter > 100) counter = 100;
+        counterEl.textContent = counter;
         
-        setTimeout(() => {
-            loaderEl.style.opacity = '0';
-            loaderEl.style.transition = 'opacity 0.5s ease';
+        if (counter >= 100) {
+            clearInterval(interval);
+            loaderTitle.classList.add('visible');
             
             setTimeout(() => {
-                loaderEl.style.display = 'none';
-                document.body.style.overflow = 'auto'; // Ensure body scrolling is enabled
-            }, 500);
-        }, 1000);
-    }
-}, 50);
-
+                loaderEl.style.opacity = '0';
+                loaderEl.style.transition = 'opacity 0.5s ease';
+                
+                setTimeout(() => {
+                    loaderEl.style.display = 'none';
+                    document.body.style.overflow = 'auto'; // Ensure body scrolling is enabled
+                }, 500);
+            }, 1000);
+        }
+    }, 50);
     
     // Header scroll behavior
     const header = document.getElementById('site-header');
@@ -833,9 +832,9 @@ const interval = setInterval(() => {
     menuClose.addEventListener('click', () => {
         menu.classList.remove('active');
     });
-    
-    // Articles data
-    <!-- Article templates -->
+</script>
+
+<!-- Article templates -->
 <div class="article-container" id="article-dune">
     <a href="#" class="article-back">← Back to Home</a>
     <div class="article-header">
