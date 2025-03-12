@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dune: Part Two - Chicken Coop Review</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&family=SF+Pro+Text:wght@400;500&display=swap');
+
+    :root {
+      --primary-red: #ff3b30;
+      --dark-red: #d62617;
+      --light-red: #ff6b61;
+      --black: #000000;
+      --dark-gray: #1d1d1f;
+      --medium-gray: #424245;
+      --light-gray: #f5f5f7;
+      --white: #ffffff;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--black);
+      color: var(--white);
+      line-height: 1.47059;
+      font-weight: 400;
+      letter-spacing: -0.022em;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 600;
+      letter-spacing: -0.009em;
+    }
+
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--black);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--white);
+    }
+
+    .loading-bar {
+      width: 200px;
+      height: 1px;
+      background-color: var(--medium-gray);
+      margin: 20px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading-progress {
+      height: 100%;
+      background-color: var(--primary-red);
+      width: 0;
+      transition: width 0.5s ease;
+    }
+
+    .loading-percentage {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      z-index: 100;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: var(--transition);
+    }
+
+    .logo {
+      max-height: 30px;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+    }
+
+    .nav-links li {
+      margin-left: 30px;
+    }
+
+    .nav-links a {
+      color: var(--white);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 400;
+      opacity: 0.8;
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+      color: var(--primary-red);
+    }
+
+    .review-header {
+      height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      position: relative;
+      padding: 0 40px 60px 40px;
+    }
+
+    .review-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
+      filter: brightness(0.4);
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1;
+    }
+
+    .review-title-content {
+      z-index: 2;
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .review-title-content h1 {
+      font-size: 56px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+    }
+
+    .review-title-content p {
+      font-size: 21px;
+      margin-bottom: 20px;
+      line-height: 1.381;
+      font-weight: 400;
+      color: #86868b;
+    }
+
+    .review-meta {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      color: #86868b;
+      font-size: 14px;
+    }
+
+    .review-meta span {
+      margin-right: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .review-rating {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .rating-stars {
+      color: var(--primary-red);
+      margin-right: 10px;
+      font-size: 20px;
+    }
+
+    .rating-number {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .review-content {
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 0 40px;
+    }
+
+    .review-content p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      color: #f5f5f7;
+    }
+
+    .review-content h2 {
+      font-size: 32px;
+      margin: 50px 0 20px 0;
+    }
+
+    .review-content h3 {
+      font-size: 24px;
+      margin: 40px 0 20px 0;
+      color: #f5f5f7;
+    }
+
+    .review-content img {
+      width: 100%;
+      border-radius: 12px;
+      margin: 30px 0;
+    }
+
+    .review-content blockquote {
+      border-left: 4px solid var(--primary-red);
+      padding-left: 20px;
+      margin: 30px 0;
+      font-style: italic;
+      color: #86868b;
+    }
+
+    .related-reviews {
+      background-color: var(--dark-gray);
+      padding: 60px 40px;
+    }
+
+    .related-reviews h2 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 36px;
+    }
+
+    .related-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .related-card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .related-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .related-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .related-card-content {
+      padding: 20px;
+    }
+
+    .related-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .related-card p {
+      font-size: 0.9rem;
+      color: #86868b;
+      margin-bottom: 15px;
+    }
+
+    .related-link {
+      font-size: 0.9rem;
+      color: var(--primary-red);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .related-link:after {
+      content: ' →';
+    }
+
+    .btn-round {
+      display: inline-block;
+      background-color: var(--primary-red);
+      color: var(--white);
+      padding: 12px 30px;
+      border: none;
+      border-radius: 980px;
+      font-size: 14px;
+      font-weight: 400;
+      text-transform: none;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-round:hover {
+      background-color: var(--dark-red);
+    }
+
+    footer {
+      padding: 40px;
+      background-color: var(--black);
+      text-align: center;
+      border-top: 1px solid var(--medium-gray);
+    }
+
+    .footer-logo {
+      max-height: 30px;
+      margin-bottom: 20px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    .footer-links li {
+      margin: 0 15px;
+    }
+
+    .footer-links a {
+      color: #86868b;
+      text-decoration: none;
+      font-size: 12px;
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--primary-red);
+    }
+
+    .copyright {
+      font-size: 12px;
+      color: #86868b;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        padding: 15px 20px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .review-header {
+        height: 50vh;
+        padding: 0 20px 40px 20px;
+      }
+
+      .review-title-content h1 {
+        font-size: 36px;
+      }
+
+      .review-title-content p {
+        font-size: 18px;
+      }
+
+      .review-content {
+        padding: 0 20px;
+        margin: 40px auto;
+      }
+
+      .review-content h2 {
+        font-size: 28px;
+      }
+
+      .review-content h3 {
+        font-size: 22px;
+      }
+
+      .related-reviews {
+        padding: 40px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div class="loading-screen">
+    <img src="https://files.catbox.moe/ilv2ni.png" alt="Chicken Coop Logo" class="logo">
+    <div class="loading-percentage">0/100</div>
+    <div class="loading-bar">
+      <div class="loading-progress"></div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="../index.html"><img src="https://files.catbox.moe/ilv2ni.png" alt="Chicken Coop" class="logo"></a>
+    <ul class="nav-links">
+      <li><a href="../index.html#featured">Featured</a></li>
+      <li><a href="../index.html#latest">Latest</a></li>
+      <li><a href="../index.html#films">Films</a></li>
+      <li><a href="../index.html#tv">TV Shows</a></li>
+      <li><a href="../index.html#books">Books</a></li>
+    </ul>
+  </nav>
+
+  <!-- Review Header Section -->
+  <section class="review-header">
+    <div class="review-bg" style="background-image: url('https://files.catbox.moe/imgtzp.jpg');"></div>
+    <div class="overlay"></div>
+    <div class="review-title-content">
+      <h1>Dune: Part Two</h1>
+      <div class="review-meta">
+        <span>Released: March 1, 2024</span>
+        <span>Sci-Fi/Adventure</span>
+        <span>166 minutes</span>
+      </div>
+      <div class="review-rating">
+        <div class="rating-stars">★★★★★</div>
+        <div class="rating-number">5.0</div>
+      </div>
+      <p>Denis Villeneuve's epic continuation delivers on its promises with breathtaking visuals and emotional depth.</p>
+    </div>
+  </section>
+
+  <!-- Review Content -->
+  <section class="review-content">
+    <p>The highly anticipated sequel to Denis Villeneuve's 2021 adaptation of Frank Herbert's seminal science fiction novel has arrived, and it doesn't just meet expectations—it exceeds them in nearly every way. "Dune: Part Two" picks up right where its predecessor left off, with Paul Atreides (Timothée Chalamet) and his mother Lady Jessica (Rebecca Ferguson) finding refuge among the Fremen of Arrakis after the fall of House Atreides.</p>
+
+    <p>What follows is a stunningly realized hero's journey that blends breathtaking visuals with complex character development and thematic depth. Villeneuve's patient, methodical approach to storytelling pays off tremendously in this second installment, allowing for both spectacular action sequences and moments of quiet introspection.</p>
+
+    <h2>Visual Masterpiece</h2>
+    <p>Greig Fraser's cinematography is nothing short of extraordinary, capturing the harsh beauty of Arrakis with a sense of scale that must be seen on the biggest screen possible. The sandworm sequences, in particular, are awe-inspiring, bringing Herbert's creations to life with a visceral power that previous adaptations could only dream of achieving.</p>
+
+    <h2>Stellar Performances</h2>
+    <p>Chalamet delivers his most compelling work to date as Paul, navigating the character's internal struggle between embracing his messianic destiny and fearing the violent jihad that may follow. Rebecca Ferguson continues to impress as Lady Jessica, whose ambition and religious fervor drive much of the narrative tension.</p>
+    
+    <p>New additions to the cast shine equally bright. Austin Butler is unrecognizable and terrifying as the sadistic Feyd-Rautha, while Florence Pugh brings depth to Princess Irulan despite limited screen time. Zendaya, finally given substantial material as Chani, creates a nuanced portrayal of a warrior torn between her people's survival and her growing feelings for Paul.</p>
+
+    <h3>The Politics of Messiah Figures</h3>
+    <p>Where "Dune: Part Two" truly excels is in its exploration of the novel's complex themes regarding religion, colonialism, and the dangers of charismatic leadership. Villeneuve never shies away from the morally ambiguous aspects of Herbert's work, presenting Paul's rise to power not as triumphant but deeply troubling.</p>
+
+    <p>As Paul increasingly manipulates religious prophecy for political gain, the film asks uncomfortable questions about the nature of belief and the thin line between liberation and conquest. These themes feel startlingly relevant in our current political climate, adding a layer of unsettling resonance to the spectacular sci-fi action.</p>
+
+    <h2>Final Verdict</h2>
+    <p>With its jaw-dropping visuals, exceptional performances, and thematic richness, "Dune: Part Two" stands as one of the most impressive science fiction epics ever committed to film. It's that rare sequel that not only builds upon its predecessor but elevates the entire story to new heights.</p>
+    
+    <p>Villeneuve has accomplished what many thought impossible: a faithful adaptation of Herbert's complex novel that sacrifices neither intellectual depth nor cinematic spectacle. For longtime fans of the books and newcomers alike, this is essential viewing—a modern masterpiece that demands to be experienced.</p>
+  </section>
+
+  <!-- Related Reviews Section -->
+  <section class="related-reviews">
+    <h2>You Might Also Like</h2>
+    <div class="related-cards">
+      <div class="related-card">
+        <img src="/api/placeholder/400/300" alt="Oppenheimer">
+        <div class="related-card-content">
+          <h3>Oppenheimer</h3>
+          <p>Christopher Nolan's biographical thriller balances historical detail with explosive visual storytelling.</p>
+          <a href="oppenheimer.html" class="related-link">Read more</a>
+        </div>
+      </div>
+      
+      <div class="related-card">
+        <img src="/api/placeholder/400/300" alt="Poor Things">
+        <div class="related-card-content">
+          <h3>Poor Things</h3>
+          <p>Yorgos Lanthimos crafts a bizarre and beautiful Victorian sci-fi tale with Emma Stone's transformative performance.</p>
+          <a href="poor-things.html" class="related-link">Read more</a>
+        </div>
+      </div>
+      
+      <div class="related-card">
+        <img src="/api/placeholder/400/300" alt="All of Us Strangers">
+        <div class="related-card-content">
+          <h3>All of Us Strangers</h3>
+          <p>Andrew Haigh's haunting drama uses supernatural elements to explore grief with remarkable tenderness.</p>
+          <a href="all-of-us-strangers.html" class="related-link">Read more</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer>
+    <img src="https://files.catbox.moe/ilv2ni.png" alt="Chicken Coop" class="footer-logo">
+    <ul class="footer-links">
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Terms of Service</a></li>
+    </ul>
+    <p class="copyright">© 2025 Chicken Coop. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Loading Animation
+    document.addEventListener('DOMContentLoaded', () => {
+      const loadingScreen = document.querySelector('.loading-screen');
+      const loadingProgress = document.querySelector('.loading-progress');
+      const loadingPercentage = document.querySelector('.loading-percentage');
+      let progress = 0;
+      
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 10) + 1;
+        if (progress > 100) progress = 100;
+        
+        loadingProgress.style.width = `${progress}%`;
+        loadingPercentage.textContent = `${progress}/100`;
+        
+        if (progress === 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            loadingScreen.style.opacity = 0;
+            loadingScreen.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+              loadingScreen.style.display = 'none';
+            }, 500);
+          }, 500);
+        }
+      }, 100);
+    });
+    
+    // Navbar Scroll Effect
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('nav');
+      if (window.scrollY > 50) {
+        nav.style.padding = '10px 40px';
+      } else {
+        nav.style.padding = '20px 40px';
+      }
+    });
+  </script>
+</body>
+</html>
