@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Reviews</title>
+    <title>The Chicken Coop - Media Reviews</title>
     <style>
         :root {
             --primary-blue: #0066FF;
@@ -68,7 +68,18 @@
             position: fixed;
             width: 100%;
             z-index: 100;
-            mix-blend-mode: difference;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-image {
+            height: 40px;
+            width: auto;
         }
         
         .logo {
@@ -88,17 +99,23 @@
         
         .carousel-container {
             width: 100%;
-            overflow: hidden;
         }
         
         .carousel {
             display: flex;
-            width: fit-content;
-            transition: transform 0.5s ease;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; /* Firefox */
+            padding: 30px 0;
+        }
+        
+        .carousel::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
         }
         
         .carousel-item {
-            width: 400px;
+            min-width: 400px;
             height: 500px;
             margin: 0 20px;
             position: relative;
@@ -106,7 +123,8 @@
             cursor: pointer;
             border-radius: 8px;
             transition: all 0.5s ease;
-            filter: blur(5px) grayscale(0.8);
+            filter: blur(2px) grayscale(0.5);
+            scroll-snap-align: center;
         }
         
         .carousel-item:hover {
@@ -161,6 +179,11 @@
             opacity: 1;
         }
         
+        .latest-reviews {
+            padding: 60px 30px;
+            margin-top: 60px;
+        }
+        
         .featured-section {
             margin-top: 120px;
             padding: 60px 30px;
@@ -175,7 +198,15 @@
             transition: opacity 0.5s ease;
         }
         
+        .section-title.blue {
+            color: var(--primary-blue);
+        }
+        
         .featured-section.visible .section-title {
+            opacity: 1;
+        }
+        
+        .latest-reviews.visible .section-title {
             opacity: 1;
         }
         
@@ -278,11 +309,6 @@
             width: 50px;
             height: 50px;
             background-color: var(--white);
-        }
-        
-        .latest-reviews {
-            padding: 60px 30px;
-            margin-top: 120px;
         }
         
         .reviews-container {
@@ -503,10 +529,49 @@
             margin-bottom: 30px;
         }
         
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.6;
+        }
+        
+        .scroll-indicator-text {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .scroll-indicator-arrow {
+            width: 20px;
+            height: 20px;
+            border-left: 2px solid var(--white);
+            border-bottom: 2px solid var(--white);
+
+        border-left: 2px solid var(--white);
+            border-bottom: 2px solid var(--white);
+            transform: rotate(-45deg);
+            animation: arrow-bounce 2s infinite;
+        }
+        
+        @keyframes arrow-bounce {
+            0%, 100% {
+                transform: rotate(-45deg) translate(0, 0);
+            }
+            50% {
+                transform: rotate(-45deg) translate(0, 10px);
+            }
+        }
+        
         @media (max-width: 768px) {
             .carousel-item {
                 width: 300px;
                 height: 400px;
+                min-width: 300px;
             }
             
             .section-title {
@@ -536,110 +601,117 @@
     
     <div class="loader">
         <div class="loader-counter"><span id="counter">0</span>/100</div>
-        <div class="loader-title">MEDIA REVIEWS</div>
+        <div class="loader-title">THE CHICKEN COOP</div>
     </div>
     
-    <header class="header">
-        <div class="logo">MEDIA REVIEWS</div>
+    <header class="header" id="site-header">
+        <div class="logo-container">
+            <img src="https://files.catbox.moe/ilv2ni.png" alt="Chicken Coop Logo" class="logo-image">
+            <div class="logo">THE CHICKEN COOP</div>
+        </div>
         <div class="menu-toggle">MENU</div>
     </header>
 
    <main class="main">
-    <section class="carousel-container">
-        <div class="carousel">
-            <div class="carousel-item" data-article="dune">
-                <img src="/api/placeholder/400/500" alt="Review 1" class="carousel-image">
-                <div class="carousel-content">
-                    <h3 class="carousel-title">Dune Part Two</h3>
-                    <p class="carousel-excerpt">Villeneuve's epic continuation brings Herbert's vision to stunning life, with breathtaking visuals and performances that elevate the source material...</p>
+    <section class="latest-reviews">
+        <h2 class="section-title">LATEST</h2>
+        <div class="carousel-container">
+            <div class="carousel">
+                <div class="carousel-item" data-article="poor-things">
+                    <img src="/api/placeholder/400/500" alt="Poor Things" class="carousel-image">
+                    <div class="carousel-content">
+                        <h3 class="carousel-title">Poor Things</h3>
+                        <p class="carousel-excerpt">Yorgos Lanthimos delivers his most accessible yet wildly inventive film to date, with Emma Stone giving a transformative performance...</p>
+                    </div>
+                </div>
+                <div class="carousel-item" data-article="quiet-place">
+                    <img src="/api/placeholder/400/500" alt="A Quiet Place: Day One" class="carousel-image">
+                    <div class="carousel-content">
+                        <h3 class="carousel-title">A Quiet Place: Day One</h3>
+                        <p class="carousel-excerpt">This prequel expands the universe in meaningful ways, focusing on the initial invasion through the lens of a completely new character...</p>
+                    </div>
+                </div>
+                <div class="carousel-item" data-article="dune">
+                    <img src="/api/placeholder/400/500" alt="Dune Part Two" class="carousel-image">
+                    <div class="carousel-content">
+                        <h3 class="carousel-title">Dune Part Two</h3>
+                        <p class="carousel-excerpt">Villeneuve's epic continuation brings Herbert's vision to stunning life, with breathtaking visuals and performances that elevate the source material...</p>
+                    </div>
+                </div>
+                <div class="carousel-item" data-article="gentlemen">
+                    <img src="/api/placeholder/400/500" alt="The Gentlemen Series" class="carousel-image">
+                    <div class="carousel-content">
+                        <h3 class="carousel-title">The Gentlemen Series</h3>
+                        <p class="carousel-excerpt">Guy Ritchie's Netflix adaptation maintains his signature style while expanding the criminal universe with fresh characters and twisty plotting...</p>
+                    </div>
+                </div>
+                <div class="carousel-item" data-article="bear">
+                    <img src="/api/placeholder/400/500" alt="The Bear Season 2" class="carousel-image">
+                    <div class="carousel-content">
+                        <h3 class="carousel-title">The Bear Season 2</h3>
+                        <p class="carousel-excerpt">Carmy's journey continues with even more intense kitchen sequences and character development, cementing the show as a masterclass in tension...</p>
+                    </div>
                 </div>
             </div>
-            <div class="carousel-item" data-article="gentlemen">
-                <img src="/api/placeholder/400/500" alt="Review 2" class="carousel-image">
-                <div class="carousel-content">
-                    <h3 class="carousel-title">The Gentlemen Series</h3>
-                    <p class="carousel-excerpt">Guy Ritchie's Netflix adaptation maintains his signature style while expanding the criminal universe with fresh characters and twisty plotting...</p>
-                </div>
+            <div class="scroll-indicator">
+                <div class="scroll-indicator-text">SCROLL</div>
+                <div class="scroll-indicator-arrow"></div>
             </div>
-            <div class="carousel-item" data-article="insideout">
-                <img src="/api/placeholder/400/500" alt="Review 3" class="carousel-image">
-                <div class="carousel-content">
-                    <h3 class="carousel-title">Inside Out 2</h3>
-                    <p class="carousel-excerpt">Pixar's sequel introduces complex new emotions with the same heartwarming approach, creating a worthy follow-up that respects its audience...</p>
-                </div>
+        </div>
+    </section>
+    
+    <section class="reviews-container">
+        <div class="review-item" style="--i: 0" data-article="midsummer">
+            <img src="/api/placeholder/400/300" alt="Midsommar Director's Cut" class="review-image">
+            <div class="review-content">
+                <h3 class="review-title">Midsommar Director's Cut</h3>
+                <p class="review-excerpt">With an additional 30 minutes of footage, Aster's extended vision further develops the relationship dynamics and ritual aspects that make this folk horror so distinctive. The new scenes add crucial context that deepens the film's themes...</p>
+                <a href="#" class="review-link">Read Review →</a>
             </div>
-            <div class="carousel-item" data-article="apes">
-                <img src="/api/placeholder/400/500" alt="Review 4" class="carousel-image">
-                <div class="carousel-content">
-                    <h3 class="carousel-title">Kingdom of the Planet of the Apes</h3>
-                    <p class="carousel-excerpt">A thoughtful continuation that pushes the franchise forward, blending stunning visual effects with provocative themes about civilization...</p>
-                </div>
+        </div>
+        <div class="review-item" style="--i: 1" data-article="insideout">
+            <img src="/api/placeholder/400/300" alt="Inside Out 2" class="review-image">
+            <div class="review-content">
+                <h3 class="review-title">Inside Out 2</h3>
+                <p class="review-excerpt">Pixar's sequel introduces complex new emotions with the same heartwarming approach, creating a worthy follow-up that respects its audience. The animation reaches new heights with stunning visual metaphors for adolescent development...</p>
+                <a href="#" class="review-link">Read Review →</a>
             </div>
-            <div class="carousel-item" data-article="bear">
-                <img src="/api/placeholder/400/500" alt="Review 5" class="carousel-image">
-                <div class="carousel-content">
-                    <h3 class="carousel-title">The Bear Season 2</h3>
-                    <p class="carousel-excerpt">Carmy's journey continues with even more intense kitchen sequences and character development, cementing the show as a masterclass in tension...</p>
-                </div>
+        </div>
+        <div class="review-item" style="--i: 2" data-article="apes">
+            <img src="/api/placeholder/400/300" alt="Kingdom of the Planet of the Apes" class="review-image">
+            <div class="review-content">
+                <h3 class="review-title">Kingdom of the Planet of the Apes</h3>
+                <p class="review-excerpt">A thoughtful continuation that pushes the franchise forward, blending stunning visual effects with provocative themes about civilization. Set generations after Caesar's reign, this new chapter expands the mythology in exciting ways...</p>
+                <a href="#" class="review-link">Read Review →</a>
             </div>
         </div>
     </section>
     
     <section class="featured-section">
-        <h2 class="section-title">FEATURED</h2>
+        <h2 class="section-title blue">FEATURED</h2>
         <div class="featured-grid">
             <div class="featured-item" data-article="shogun">
-                <img src="/api/placeholder/400/400" alt="Featured 1" class="featured-image">
+                <img src="/api/placeholder/400/400" alt="Shogun" class="featured-image">
                 <div class="featured-content">
                     <h3 class="featured-title">Shogun</h3>
                 </div>
             </div>
             <div class="featured-item" data-article="fallout">
-                <img src="/api/placeholder/400/400" alt="Featured 2" class="featured-image">
+                <img src="/api/placeholder/400/400" alt="Fallout" class="featured-image">
                 <div class="featured-content">
                     <h3 class="featured-title">Fallout</h3>
                 </div>
             </div>
             <div class="featured-item" data-article="deadpool">
-                <img src="/api/placeholder/400/400" alt="Featured 3" class="featured-image">
+                <img src="/api/placeholder/400/400" alt="Deadpool & Wolverine" class="featured-image">
                 <div class="featured-content">
                     <h3 class="featured-title">Deadpool & Wolverine</h3>
                 </div>
             </div>
             <div class="featured-item" data-article="challengers">
-                <img src="/api/placeholder/400/400" alt="Featured 4" class="featured-image">
+                <img src="/api/placeholder/400/400" alt="Challengers" class="featured-image">
                 <div class="featured-content">
                     <h3 class="featured-title">Challengers</h3>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="latest-reviews">
-        <h2 class="section-title">LATEST</h2>
-        <div class="reviews-container">
-            <div class="review-item" style="--i: 0" data-article="poor-things">
-                <img src="/api/placeholder/400/300" alt="Review" class="review-image">
-                <div class="review-content">
-                    <h3 class="review-title">Poor Things</h3>
-                    <p class="review-excerpt">Yorgos Lanthimos delivers his most accessible yet wildly inventive film to date, with Emma Stone giving a transformative performance that defies all expectations. The Victorian steampunk aesthetic creates a world both familiar and utterly alien...</p>
-                    <a href="#" class="review-link">Read Review →</a>
-                </div>
-            </div>
-            <div class="review-item" style="--i: 1" data-article="quiet-place">
-                <img src="/api/placeholder/400/300" alt="Review" class="review-image">
-                <div class="review-content">
-                    <h3 class="review-title">A Quiet Place: Day One</h3>
-                    <p class="review-excerpt">This prequel expands the universe in meaningful ways, focusing on the initial invasion through the lens of a completely new character. Lupita Nyong'o anchors the film with a powerful performance that conveys volumes with minimal dialogue...</p>
-                    <a href="#" class="review-link">Read Review →</a>
-                </div>
-            </div>
-            <div class="review-item" style="--i: 2" data-article="midsummer">
-                <img src="/api/placeholder/400/300" alt="Review" class="review-image">
-                <div class="review-content">
-                    <h3 class="review-title">Midsommar Director's Cut</h3>
-                    <p class="review-excerpt">With an additional 30 minutes of footage, Aster's extended vision further develops the relationship dynamics and ritual aspects that make this folk horror so distinctive. The new scenes add crucial context that deepens the film's themes...</p>
-                    <a href="#" class="review-link">Read Review →</a>
                 </div>
             </div>
         </div>
@@ -647,7 +719,7 @@
 </main>
 
 <footer class="footer">
-    <div class="footer-logo">MR</div>
+    <div class="footer-logo">THE CHICKEN COOP</div>
     <div class="footer-links">
         <a href="#" class="footer-link">About</a>
         <a href="#" class="footer-link">Reviews</a>
@@ -666,7 +738,100 @@
     </div>
 </div>
 
-<!-- Article templates -->
+<!-- Article template containers -->
+<div id="article-containers"></div>
+
+<script>
+    // Loader animation
+    let counter = 0;
+    const counterEl = document.getElementById('counter');
+    const loaderEl = document.querySelector('.loader');
+    const loaderTitle = document.querySelector('.loader-title');
+    
+    const interval = setInterval(() => {
+        counter += Math.floor(Math.random() * 5) + 1;
+        if (counter > 100) counter = 100;
+        counterEl.textContent = counter;
+        
+        if (counter >= 100) {
+            clearInterval(interval);
+            loaderTitle.classList.add('visible');
+            
+            setTimeout(() => {
+                loaderEl.style.opacity = 0;
+                setTimeout(() => {
+                    loaderEl.style.display = 'none';
+                }, 500);
+            }, 1000);
+        }
+    }, 50);
+    
+    // Header scroll behavior
+    const header = document.getElementById('site-header');
+    let lastScrollTop = 0;
+    
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const featuredSection = document.querySelector('.featured-section');
+        const featuredOffset = featuredSection.offsetTop;
+        
+        // Change header on scroll
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+            header.style.transform = 'translateY(-100%)';
+        } else {
+            header.style.transform = 'translateY(0)';
+        }
+        
+        // Change logo when reached featured section
+        if (scrollTop >= featuredOffset - 100) {
+            document.querySelector('.logo').textContent = 'THE CHICKEN COOP';
+        } else {
+            document.querySelector('.logo').textContent = 'THE CHICKEN COOP';
+        }
+        
+        lastScrollTop = scrollTop;
+    });
+    
+    // Scroll animations
+    const sections = document.querySelectorAll('.featured-section, .latest-reviews');
+    
+    const checkScroll = () => {
+        sections.forEach(section => {
+            const sectionTop = section.getBoundingClientRect().top;
+            const sectionBottom = section.getBoundingClientRect().bottom;
+            
+            if (sectionTop < window.innerHeight * 0.8 && sectionBottom > 0) {
+                section.classList.add('visible');
+            }
+        });
+    };
+    
+    window.addEventListener('scroll', checkScroll);
+    window.addEventListener('load', checkScroll);
+    
+    // Custom cursor
+    const cursor = document.querySelector('.cursor');
+    
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+    
+    // Menu toggle
+    const menuToggle = document.querySelector('.menu-toggle');
+    const menuClose = document.querySelector('.menu-close');
+    const menu = document.querySelector('.menu');
+    
+    menuToggle.addEventListener('click', () => {
+        menu.classList.add('active');
+    });
+    
+    menuClose.addEventListener('click', () => {
+        menu.classList.remove('active');
+    });
+    
+    // Articles data
+    <!-- Article templates -->
 <div class="article-container" id="article-dune">
     <a href="#" class="article-back">← Back to Home</a>
     <div class="article-header">
